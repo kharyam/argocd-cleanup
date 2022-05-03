@@ -1,0 +1,28 @@
+---
+step-runner-config:
+  global-defaults:
+    organization: redhat
+    application-name: vcs-argocd-cleanup
+    service-name: service
+    container-image-repository: rhvcs/vcs-argocd-cleanup
+
+  generate-metadata:
+  - implementer: Jenkins
+  - implementer: Git
+  - implementer: Npm
+  - implementer: SemanticVersion
+
+  tag-source:
+  - implementer: Git
+    config:
+      git-username: rhvcs-monorepo-workflow
+
+  create-container-image:
+  - implementer: Buildah
+
+  push-container-image:
+  - implementer: Skopeo
+    config: {}
+    environment-config:
+      INFRA:
+        container-image-push-tag: latest

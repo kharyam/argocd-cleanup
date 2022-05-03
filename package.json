@@ -1,0 +1,5 @@
+{
+   "name": "rhvcs-argocd-cleanup",
+   "version": "2.0.0",
+   "description": "ArgoCD Application Cleanup. This file is used for the sole purpose of conveying version information to ploigos"
+}
