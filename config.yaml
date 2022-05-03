@@ -1,0 +1,16 @@
+
+configuration:
+  frequency_in_seconds: 600
+  main_branch: main
+  log_only: False
+  repo_mapping:
+    - config_repo: vcs-backend-config
+      code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/backend-monorepo.git"
+    - config_repo: vcs-frontend-config
+      code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/vcs-frontend.git"
+    - config_repo: vcs-auto-approval-config
+      code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/vcs-auto-approval.git"
+    - config_repo: vcs-server-pages-config"
+      code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/vcs-server-pages-config.git"
+    - config_repo: reference-quarkus-mvn-config
+      code_remote: "https://gitlab.consulting.redhat.com/rhvcs/infrastructure/reference-quarkus-mvn.git"
