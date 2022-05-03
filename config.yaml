@@ -2,7 +2,8 @@
 configuration:
   frequency_in_seconds: 600
   main_branch: main
-  log_only: False
+  log_only: True
+  delete_merged_branches: False
   repo_mapping:
     - config_repo: vcs-backend-config
       code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/backend-monorepo.git"

@@ -6,6 +6,7 @@ import yaml
 import sh
 import re
 import os
+import signal
 import time
 from git import Repo
 
@@ -15,22 +16,28 @@ class ArgocdCleanup:
     REMOTE_NAME = 'origin'
 
     def __init__(self):
+
+        signal.signal(signal.SIGTERM, self.handler)
         print("* Loading configuration...", end="", flush=True)
         config = self.load_configuration()
         self.config_repo_mapping = config['configuration']['repo_mapping']
         self.main_branch = config['configuration']['main_branch']
         self.log_only = config['configuration']['log_only']
         self.frequency = config['configuration']['frequency_in_seconds']
+        self.delete_merged_branches = config['configuration']['delete_merged_branches']
         self.branches_to_delete = []
         self.apps_to_delete = []
         self.argocd_server = os.environ['ARGOCD_SERVER']
         self.argocd_username = os.environ['ARGOCD_USERNAME']
         self.argocd_password = os.environ['ARGOCD_PASSWORD']
-        self.active = True
         print("Done")
 
+    def handler(self, signum, frame):
+        print("\n\n*** Received SIGTERM - exiting ***")
+        exit(0)
+
     def start(self):
-        while self.active:
+        while True:
             self.analyze_argocd_applications()
             print(f"\n* Waiting {self.frequency} seconds...",
                   end="", flush=True)
@@ -75,7 +82,7 @@ class ArgocdCleanup:
             print("\n** The following ArgoCD applications were deleted")
         print(*self.apps_to_delete, sep='\n')
 
-        if (self.log_only):
+        if (self.log_only or not self.delete_merged_branches):
             print("\n** The following branches would have been deleted")
         else:
             print("\n** The following branches were deleted")
@@ -134,7 +141,7 @@ class ArgocdCleanup:
             print(f"TODO: Deleting argocd app {name}")
 
     def delete_branch(self, repo, branch):
-        if not self.log_only:
+        if not self.log_only and self.delete_merged_branches:
             print(f"TODO: Deleting {branch} from {repo}")
 
     def delete_merged_branch_and_app(self, branch_name, argocd_app_name, repo):
