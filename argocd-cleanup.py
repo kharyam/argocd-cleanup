@@ -73,7 +73,7 @@ class ArgocdCleanup:
                 else:
                     # print(f'Branch "{branch_name}" does not exist in "{repo_short_name}". I should delete the "{argocd_app_name}" application in ArgoCD')
                     self.delete_merged_branch_and_app(
-                        branch_name, argocd_app_name, repo)
+                        branch_name, argocd_app_name, repo, remote)
 
         print("Done")
         if (self.log_only):
@@ -119,6 +119,8 @@ class ArgocdCleanup:
         if not remote.exists():
             print(
                 f"\nError - unable to verify existence of remote repo for {repo_remote_url}")
+        else:
+            remote.fetch()
         return remote
 
     def branch_exists(self, branch_name, remote):
@@ -144,7 +146,8 @@ class ArgocdCleanup:
         if not self.log_only and self.delete_merged_branches:
             print(f"TODO: Deleting {branch} from {repo}")
 
-    def delete_merged_branch_and_app(self, branch_name, argocd_app_name, repo):
+    def delete_merged_branch_and_app(self, branch_name, argocd_app_name, repo, remote):
+        remote.pull(self.main_branch)
         merged_branches = repo.git.branch(
             '-r', '--merged', self.main_branch).split('\n')
         for branch in merged_branches:
