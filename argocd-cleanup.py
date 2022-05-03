@@ -2,13 +2,13 @@
 
 # pip install git-python sh pyyaml
 
-import yaml
-import sh
-import re
+from git import Repo
 import os
+import re
+import sh
 import signal
 import time
-from git import Repo
+import yaml
 
 
 class ArgocdCleanup:
