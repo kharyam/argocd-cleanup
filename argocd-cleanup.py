@@ -10,14 +10,15 @@ import signal
 import time
 import yaml
 
-
 class ArgocdCleanup:
-
     REMOTE_NAME = 'origin'
 
     def __init__(self):
+        """ This constructor loads configuration information from a yaml file
+            and initializes internal variables.
+        """
 
-        signal.signal(signal.SIGTERM, self.handler)
+        signal.signal(signal.SIGTERM, self.sigterm_handler)
         print("* Loading configuration...", end="", flush=True)
         config = self.load_configuration()
         self.config_repo_mapping = config['configuration']['repo_mapping']
@@ -32,11 +33,20 @@ class ArgocdCleanup:
         self.argocd_password = os.environ['ARGOCD_PASSWORD']
         print("Done")
 
-    def handler(self, signum, frame):
+
+    def sigterm_handler(self, signum, frame):
+        """ Exit the application when SIGTERM is received
+
+        Args:
+            signum : _Signal number
+            frame : Frame
+        """
         print("\n\n*** Received SIGTERM - exiting ***")
         exit(0)
 
     def start(self):
+        """ Starts the cleanup process periodically at the defined frequency
+        """
         while True:
             self.analyze_argocd_applications()
             print(f"\n* Waiting {self.frequency} seconds...",
@@ -45,6 +55,12 @@ class ArgocdCleanup:
             print("Done")
 
     def analyze_argocd_applications(self):
+        """ Logs into ArgoCD and analyzes DEV applications
+            
+            * If the remote branch no longer exists, the application is deleted
+            * If the remote branch exists but was merged to main, the application is deleted
+              * Optionally the remote branch can be deleted as well
+        """
         print("* Logging in to Argocd...", end="", flush=True)
         self.argocd_login()
         print("Done")
@@ -71,7 +87,6 @@ class ArgocdCleanup:
                     self.delete_argocd_app(argocd_app_name)
                     self.apps_to_delete.append(argocd_app_name)
                 else:
-                    # print(f'Branch "{branch_name}" does not exist in "{repo_short_name}". I should delete the "{argocd_app_name}" application in ArgoCD')
                     self.delete_merged_branch_and_app(
                         branch_name, argocd_app_name, repo, remote)
 
@@ -91,25 +106,55 @@ class ArgocdCleanup:
         self.reset()
 
     def load_configuration(self):
+        """ Load configuration data from yaml file
+
+        Returns:
+            dict: Configuration information
+        """
         with open('config.yaml', 'r') as config_file:
             config = yaml.safe_load(config_file)
         return config
 
     def argocd_login(self):
+        """ Login to ArgoCD
+        """
         sh.argocd("login", self.argocd_server,
                   "--username", self.argocd_username,
                   "--password", self.argocd_password)
 
     def argocd_get_app_info(self):
+        """ Retrieves application information from ArgoCD as yaml
+
+        Returns:
+            dict: Application information
+        """
         buf = sh.argocd("app", "list", "-o", "yaml")
         return yaml.safe_load(buf.__str__())
 
     def get_code_repo_remote(self, repo_url):
+        """ Retrieves the code git repo remote url corresponding to
+            the input config repo url
+
+        Args:
+            repo_url (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         for entry in self.config_repo_mapping:
             if entry['config_repo'] in repo_url:
                 return entry['code_remote']
 
     def create_code_remote(self, repo, repo_remote_url):
+        """ Creates local remote for code repo if it does not exist
+
+        Args:
+            repo: Local git repository object
+            repo_remote_url: git remote url
+
+        Returns:
+            _type_: _description_
+        """
         remote = None
         try:
             remote = repo.remote(self.REMOTE_NAME)
@@ -124,6 +169,15 @@ class ArgocdCleanup:
         return remote
 
     def branch_exists(self, branch_name, remote):
+        """ Checks whether the code branch exists in the remote repository
+
+        Args:
+            branch_name: Name of the branch to check
+            remote: git remote to check for the branch
+
+        Returns:
+            boolean: True if the branch exists in the remote, False otherwise
+        """
         exists = False
         for remote_ref in remote.refs:
             ref_string_for_matching = remote_ref.__str__().replace('/', '-')
@@ -133,20 +187,47 @@ class ArgocdCleanup:
         return exists
 
     def init_code_repo(self, repo_remote_url):
+        """ Initializzes the code repo
+
+        Args:
+            repo_remote_url: url for the git remote
+
+        Returns:
+            Initialized remote object
+        """
         repo_short_name = re.search(
             ".*/(.*)\.git", repo_remote_url).group(1)
         local_repo_path = os.path.join('/tmp', repo_short_name)
         return Repo.init(local_repo_path)
 
     def delete_argocd_app(self, name):
+        """ Deletes the named argocd application
+
+        Args:
+            name: Name of the application to delete
+        """
         if not self.log_only:
             print(f"TODO: Deleting argocd app {name}")
 
     def delete_branch(self, repo, branch):
+        """ Delete branch
+
+        Args:
+            repo: Repository to delete branch from
+            branch: Branch to delete
+        """
         if not self.log_only and self.delete_merged_branches:
             print(f"TODO: Deleting {branch} from {repo}")
 
     def delete_merged_branch_and_app(self, branch_name, argocd_app_name, repo, remote):
+        """ If the branch was merged, delete it and the corresponding application in ArgoCD
+
+        Args:
+            branch_name (_type_): Name of the branch to delete
+            argocd_app_name (_type_): ArgoCD application name
+            repo (_type_): git repository
+            remote (_type_): git remote
+        """
         remote.pull(self.main_branch)
         merged_branches = repo.git.branch(
             '-r', '--merged', self.main_branch).split('\n')
@@ -160,6 +241,8 @@ class ArgocdCleanup:
                 break
 
     def reset(self):
+        """ Reset the state of this object
+        """
         self.branches_to_delete = []
         self.apps_to_delete = []
 
