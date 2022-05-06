@@ -6,9 +6,8 @@ from git import Repo
 import os
 import re
 import sh
-import signal
-import time
 import yaml
+
 
 class ArgocdCleanup:
     REMOTE_NAME = 'origin'
@@ -17,46 +16,23 @@ class ArgocdCleanup:
         """ This constructor loads configuration information from a yaml file
             and initializes internal variables.
         """
-
-        signal.signal(signal.SIGTERM, self.sigterm_handler)
+        self.argocd_server = os.environ['ARGOCD_SERVER']
+        self.argocd_username = os.environ['ARGOCD_USERNAME']
+        self.argocd_password = os.environ['ARGOCD_PASSWORD']
+        self.argocd_configfile = os.environ['CONFIG_FILE']
         print("* Loading configuration...", end="", flush=True)
         config = self.load_configuration()
         self.config_repo_mapping = config['configuration']['repo_mapping']
         self.main_branch = config['configuration']['main_branch']
         self.log_only = config['configuration']['log_only']
-        self.frequency = config['configuration']['frequency_in_seconds']
         self.delete_merged_branches = config['configuration']['delete_merged_branches']
         self.branches_to_delete = []
         self.apps_to_delete = []
-        self.argocd_server = os.environ['ARGOCD_SERVER']
-        self.argocd_username = os.environ['ARGOCD_USERNAME']
-        self.argocd_password = os.environ['ARGOCD_PASSWORD']
         print("Done")
 
-
-    def sigterm_handler(self, signum, frame):
-        """ Exit the application when SIGTERM is received
-
-        Args:
-            signum : _Signal number
-            frame : Frame
-        """
-        print("\n\n*** Received SIGTERM - exiting ***")
-        exit(0)
-
-    def start(self):
-        """ Starts the cleanup process periodically at the defined frequency
-        """
-        while True:
-            self.analyze_argocd_applications()
-            print(f"\n* Waiting {self.frequency} seconds...",
-                  end="", flush=True)
-            time.sleep(self.frequency)
-            print("Done")
-
-    def analyze_argocd_applications(self):
+    def cleanup_argocd_applications(self):
         """ Logs into ArgoCD and analyzes DEV applications
-            
+
             * If the remote branch no longer exists, the application is deleted
             * If the remote branch exists but was merged to main, the application is deleted
               * Optionally the remote branch can be deleted as well
@@ -111,7 +87,7 @@ class ArgocdCleanup:
         Returns:
             dict: Configuration information
         """
-        with open('config.yaml', 'r') as config_file:
+        with open(self.argocd_configfile, 'r') as config_file:
             config = yaml.safe_load(config_file)
         return config
 
@@ -119,6 +95,7 @@ class ArgocdCleanup:
         """ Login to ArgoCD
         """
         sh.argocd("login", self.argocd_server,
+                  "--insecure",
                   "--username", self.argocd_username,
                   "--password", self.argocd_password)
 
@@ -128,12 +105,13 @@ class ArgocdCleanup:
         Returns:
             dict: Application information
         """
-        buf = sh.argocd("app", "list", "-o", "yaml")
+        buf = sh.argocd("--insecure", "app", "list", "-o", "yaml")
         return yaml.safe_load(buf.__str__())
 
     def get_code_repo_remote(self, repo_url):
         """ Retrieves the code git repo remote url corresponding to
-            the input config repo url
+            the input config repo url. Adds git credentials if 
+            they are defined
 
         Args:
             repo_url (_type_): _description_
@@ -141,9 +119,20 @@ class ArgocdCleanup:
         Returns:
             _type_: _description_
         """
+        remote = None
         for entry in self.config_repo_mapping:
             if entry['config_repo'] in repo_url:
-                return entry['code_remote']
+                remote = entry['code_remote']
+                try:
+                    remote_username = os.environ[entry.get(
+                        'remote_username_env_var')]
+                    remote_password = os.environ[entry.get(
+                        'remote_password_env_var')]
+                    remote = remote.replace(
+                        'https://', f'https://{remote_username}:{remote_password}@')
+                except:
+                    pass
+        return remote
 
     def create_code_remote(self, repo, repo_remote_url):
         """ Creates local remote for code repo if it does not exist
@@ -229,6 +218,7 @@ class ArgocdCleanup:
             remote (_type_): git remote
         """
         remote.pull(self.main_branch)
+        repo.git.checkout(self.main_branch)
         merged_branches = repo.git.branch(
             '-r', '--merged', self.main_branch).split('\n')
         for branch in merged_branches:
@@ -249,4 +239,4 @@ class ArgocdCleanup:
 
 if __name__ == "__main__":
     argo_cleaner = ArgocdCleanup()
-    argo_cleaner.start()
+    argo_cleaner.cleanup_argocd_applications()

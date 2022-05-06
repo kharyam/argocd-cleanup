@@ -1,17 +1,26 @@
-
+---
 configuration:
-  frequency_in_seconds: 600
   main_branch: main
   log_only: True
   delete_merged_branches: False
   repo_mapping:
     - config_repo: vcs-backend-config
       code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/backend-monorepo.git"
+      remote_username_env_var: BACKEND_GIT_USERNAME
+      remote_password_env_var: BACKEND_GIT_PASSWORD
     - config_repo: vcs-frontend-config
       code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/vcs-frontend.git"
+      remote_username_env_var: FRONTEND_GIT_USERNAME
+      remote_password_env_var: FRONTEND_GIT_PASSWORD
     - config_repo: vcs-auto-approval-config
       code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/vcs-auto-approval.git"
+      remote_username_env_var: AUTOAPPROVAL_GIT_USERNAME
+      remote_password_env_var: AUTOAPPROVAL_GIT_PASSWORD
     - config_repo: vcs-server-pages-config"
       code_remote: "https://gitlab.consulting.redhat.com/rhvcs/application/vcs-server-pages-config.git"
+      remote_username_env_var: SERVERPAGES_GIT_USERNAME
+      remote_password_env_var: SERVERPAGES_GIT_PASSWORD
     - config_repo: reference-quarkus-mvn-config
       code_remote: "https://gitlab.consulting.redhat.com/rhvcs/infrastructure/reference-quarkus-mvn.git"
+      remote_username_env_var: REFQUARKUS_GIT_USERNAME
+      remote_password_env_var: REFQUARKUS_GIT_PASSWORD
