@@ -1,5 +1,7 @@
 FROM quay.io/ploigos/ploigos-tool-argocd
 
+ARG PLOIGOS_USER_UID
+
 USER 0
 ENV CONFIG_DIR=/config
 VOLUME /config
