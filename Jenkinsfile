@@ -48,10 +48,11 @@ spec:
                 SERVERPAGES_GIT_CREDS  = credentials('vcs-jenkins-server-pages')
             }
             steps {
-                container(vcs-argocd-cleanup)
-                sh """
-                /app/cleanup.sh
-                """
+                container(vcs-argocd-cleanup) {
+                    sh """
+                    /app/cleanup.sh
+                    """
+                }
             }
         }
     }
