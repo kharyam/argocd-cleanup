@@ -14,7 +14,7 @@ spec:
     - name: vcs-argocd-cleanup
       # image: images.paas.redhat.com/rhvcs/vcs-argocd-cleanup
       image: quay.io/kharyam/vcs-argocd-cleanup:latest
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       resources:
         limits:
             cpu: 500m
