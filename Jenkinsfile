@@ -25,13 +25,13 @@ spec:
       tty: true
       volumeMounts:
       - name: ploigos-platform-config-secrets
-        mountPath: /config/ploigos-platform-config-secrets.yml
+        mountPath: /config
         subPath: ploigos-platform-config-secrets.yml
       - name: ploigos-platform-config
-        mountPath: /config/ploigos-platform-config.yml
+        mountPath: /config
         subPath: ploigos-platform-config.yml
       - name: jenkins-key
-        mountPath: /config/jenkins.key
+        mountPath: /config
         subPath: jenkins.key
 
     volumes:
