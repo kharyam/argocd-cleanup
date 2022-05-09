@@ -1,7 +1,4 @@
 pipeline {
-    options {
-        ansicolor('xterm')
-    }
     agent {
         kubernetes {
             cloud 'openshift'
