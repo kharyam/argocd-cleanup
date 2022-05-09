@@ -24,10 +24,16 @@ spec:
             memory: 512Mi
       tty: true
       volumeMounts:
-      - mountPath: /config/ploigos-platform-config-secrets.yml
-        name: ploigos-platform-config-secrets
-      - mountPath: /config/ploigos-platform-config.yml
-        name: ploigos-platform-config
+      - name: ploigos-platform-config-secrets
+        mountPath: /config/ploigos-platform-config-secrets.yml
+        subPath: ploigos-platform-config-secrets.yml
+      - name: ploigos-platform-config
+        mountPath: /config/ploigos-platform-config.yml
+        subPath: ploigos-platform-config.yml
+      - name: jenkins-key
+        mountPath: /config/jenkins.keyrhvcs preprod
+        subPath: jenkins.key
+
     volumes:
     - name: ploigos-platform-config-secrets
       secret:
@@ -35,6 +41,9 @@ spec:
     - name: ploigos-platform-config
       secret:
         secretName: ploigos-platform-config
+    - name: jenkins-key
+      secret:
+        secretName: jenkins-pgp-private-key
 """
         }
     }
