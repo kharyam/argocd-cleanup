@@ -41,11 +41,11 @@ spec:
     stages {
         stage('Cleanup ArgoCD DEV Project') {
             environment {
-                REFQUARKUS_GIT_CREDS   = credentials('vcs-jenkins-reference-quarkus-mvn')
-                BACKEND_GIT_CREDS      = credentials('vcs-jenkins-backend-monorepo')
-                FRONTEND_GIT_CREDS     = credentials('vcs-jenkins-frontend')
-                AUTOAPPROVAL_GIT_CREDS = credentials('vcs-jenkins-auto-approval')
-                SERVERPAGES_GIT_CREDS  = credentials('vcs-jenkins-server-pages')
+                // REFQUARKUS_GIT_CREDS   = credentials('vcs-jenkins-reference-quarkus-mvn')
+                // BACKEND_GIT_CREDS      = credentials('vcs-jenkins-backend-monorepo')
+                // FRONTEND_GIT_CREDS     = credentials('vcs-jenkins-frontend')
+                // AUTOAPPROVAL_GIT_CREDS = credentials('vcs-jenkins-auto-approval')
+                // SERVERPAGES_GIT_CREDS  = credentials('vcs-jenkins-server-pages')
             }
             steps {
                 container("vcs-argocd-cleanup") {
