@@ -4,7 +4,7 @@ pipeline {
             cloud 'openshift'
             yaml """
 apiVersion: v1
-kind: pod
+kind: Pod
 metadata:
     labels:
         jenkins-build-id: ${env.BUILD_ID}
