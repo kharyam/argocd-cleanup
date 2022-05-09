@@ -4,8 +4,8 @@ USER 0
 ENV CONFIG_DIR=/config
 VOLUME /config
 
-RUN mkdir /app 
-ADD argocd-cleanup.py startup.sh /app
+RUN dnf update -y ; mkdir /app 
+ADD argocd-cleanup.py cleanup.sh /app
 ADD config.yaml /config
 RUN chmod 550 -R /app && chgrp 0 -R /app && pip install git-python sh pyyaml
 
