@@ -50,9 +50,9 @@ spec:
             steps {
                 container("vcs-argocd-cleanup") {
                     script {
-                        sh """
+                        sh '''
                         /app/cleanup.sh
-                        """
+                        '''
                     }
                 }
             }
