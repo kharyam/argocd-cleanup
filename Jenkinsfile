@@ -28,7 +28,6 @@ spec:
           name: ploigos-platform-config-secrets.yml
         - mountPath: /config/ploigos-platform-config.yml
           name: ploigos-platform-config.yml
-
     volumes:
     - name: ploigos-platform-config-secrets
       secret:
