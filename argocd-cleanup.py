@@ -124,12 +124,10 @@ class ArgocdCleanup:
             if entry['config_repo'] in repo_url:
                 remote = entry['code_remote']
                 try:
-                    remote_username = os.environ[entry.get(
-                        'remote_username_env_var')]
-                    remote_password = os.environ[entry.get(
-                        'remote_password_env_var')]
+                    remote_creds = os.environ[entry.get(
+                        'remote_creds_env_var')]
                     remote = remote.replace(
-                        'https://', f'https://{remote_username}:{remote_password}@')
+                        'https://', f'https://{remote_creds}@')
                 except:
                     pass
         return remote

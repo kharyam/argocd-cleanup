@@ -12,5 +12,5 @@ RUN chmod 550 -R /app && chgrp 0 -R /app && pip install git-python sh pyyaml
 VOLUME /config
 USER 1001
 
-CMD /app/startup.sh
+CMD /app/cleanup.sh
 
