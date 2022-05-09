@@ -31,7 +31,7 @@ spec:
         mountPath: /config/ploigos-platform-config.yml
         subPath: ploigos-platform-config.yml
       - name: jenkins-key
-        mountPath: /config/jenkins.keyrhvcs preprod
+        mountPath: /config/jenkins.key
         subPath: jenkins.key
 
     volumes:
