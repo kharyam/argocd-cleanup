@@ -49,9 +49,11 @@ spec:
             }
             steps {
                 container(vcs-argocd-cleanup) {
-                    sh """
-                    /app/cleanup.sh
-                    """
+                    script {
+                        sh """
+                        /app/cleanup.sh
+                        """
+                    }
                 }
             }
         }
