@@ -22,7 +22,7 @@ spec:
         requests:
             cpu: 500m
             memory: 512Mi
-    tty: true
+      tty: true
         volumeMounts:
         - mountPath: /config/ploigos-platform-config-secrets.yml
           name: ploigos-platform-config-secrets.yml
