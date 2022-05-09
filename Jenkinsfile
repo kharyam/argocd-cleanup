@@ -25,9 +25,9 @@ spec:
       tty: true
       volumeMounts:
       - mountPath: /config/ploigos-platform-config-secrets.yml
-        name: ploigos-platform-config-secrets.yml
+        name: ploigos-platform-config-secrets
       - mountPath: /config/ploigos-platform-config.yml
-        name: ploigos-platform-config.yml
+        name: ploigos-platform-config
     volumes:
     - name: ploigos-platform-config-secrets
       secret:
