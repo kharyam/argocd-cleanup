@@ -24,26 +24,18 @@ spec:
             memory: 512Mi
       tty: true
       volumeMounts:
-      - name: ploigos-platform-config-secrets
-        mountPath: /config
-        subPath: ploigos-platform-config-secrets.yml
-      - name: ploigos-platform-config
-        mountPath: /config
-        subPath: ploigos-platform-config.yml
-      - name: jenkins-key
-        mountPath: /config
-        subPath: jenkins.key
-
+      - name: config-secrets
+        mountPath: "/config/"
     volumes:
-    - name: ploigos-platform-config-secrets
-      secret:
-        secretName: ploigos-platform-config-secrets
-    - name: ploigos-platform-config
-      secret:
-        secretName: ploigos-platform-config
-    - name: jenkins-key
-      secret:
-        secretName: jenkins-pgp-private-key
+    - name: config-secrets
+      projected:
+        sources:
+        - secret:
+          name: ploigos-platform-config-secrets
+        - secret:
+          name: ploigos-platform-config
+        - secret:
+          name: jenkins-pgp-private-key
 """
         }
     }
