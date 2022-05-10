@@ -42,7 +42,7 @@ spec:
           secretName: ploigos-platform-config
       - name: ploigos-config-secrets
         secret:
-          secretName: ploigos-platform-config
+          secretName: ploigos-platform-config-secrets
 """
         }
     }
