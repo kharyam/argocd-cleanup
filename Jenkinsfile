@@ -28,7 +28,7 @@ spec:
         mountPath: "/config/pgp-private-keys"
         readOnly: true
       - name: ploigos-config
-        mountPath: "/config/plogos-config"
+        mountPath: "/config/ploigos-config"
         readOnly: true
       - name: ploigos-config-secrets
         mountPath: "/config/ploigos-config-secrets"
