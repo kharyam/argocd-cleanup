@@ -59,6 +59,7 @@ spec:
                 container("vcs-argocd-cleanup") {
                     script {
                         sh '''
+                            set -x
                             gpg --import $CONFIG_DIR/pgp-private-keys/jenkins.key
                             export CONFIG_FILE=$CONFIG_DIR/config.yaml
                             export ARGOCD_USERNAME=$(cat $CONFIG_DIR/ploigos-config/ploigos-platform-config.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-username')
