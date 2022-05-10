@@ -52,6 +52,7 @@ spec:
                 container("vcs-argocd-cleanup") {
                     script {
                         sh '''
+                            ls -l /config
                             /app/cleanup.sh
                         '''
                     }
