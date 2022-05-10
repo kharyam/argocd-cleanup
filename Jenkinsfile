@@ -24,18 +24,25 @@ spec:
             memory: 512Mi
       tty: true
       volumeMounts:
-      - name: config-secrets
-        mountPath: "/config/"
+      - name: pgp-secret
+        mountPath: "/config/pgp-private-keys"
+        readOnly: true
+      - name: ploigos-config
+        mountPath: "/config/plogos-config"
+        readOnly: true
+      - name: ploigos-config-secrets
+        mountPath: "/config/ploigos-config-secrets"
+        readOnly: true
     volumes:
-    - name: config-secrets
-      projected:
-        sources:
-        - secret:
-          name: ploigos-platform-config-secrets
-        - secret:
-          name: ploigos-platform-config
-        - secret:
-          name: jenkins-pgp-private-key
+      - name: pgp-secret
+        secret:
+          secretName: jenkins-pgp-private-key
+      - name: ploigos-config
+        secret:
+          secretName: ploigos-platform-config
+      - name: ploigos-config-secrets
+        secret:
+          secretName: ploigos-platform-config
 """
         }
     }
@@ -52,8 +59,12 @@ spec:
                 container("vcs-argocd-cleanup") {
                     script {
                         sh '''
-                            ls -l /config
-                            /app/cleanup.sh
+                            gpg --import $CONFIG_DIR/pgp-private-keys/jenkins.key
+                            export CONFIG_FILE=$CONFIG_DIR/config.yaml
+                            export ARGOCD_USERNAME=$(cat $CONFIG_DIR/ploigos-config/ploigos-platform-config.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-username')
+                            export ARGOCD_SERVER=$(cat $CONFIG_DIR/ploigos-config/ploigos-platform-config.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-api')
+                            export ARGOCD_PASSWORD=$(sops -d $CONFIG_DIR/ploigos-config-secrets/ploigos-platform-config-secrets.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-password')
+                            /app/argocd-cleanup.py                            
                         '''
                     }
                 }
