@@ -9,7 +9,7 @@ step-runner-config:
   generate-metadata:
   - implementer: Jenkins
   - implementer: Git
-  - implementer: SemanticVersion
+#  - implementer: SemanticVersion
 
   tag-source:
   - implementer: Git
