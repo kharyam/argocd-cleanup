@@ -50,7 +50,7 @@ class ArgocdCleanup:
             argocd_app_name = application["metadata"]["name"]
             target_revision = application["spec"]["source"]["targetRevision"]
             if target_revision.endswith("DEV"):
-                print("   .", end="", flush=True)
+                print("   .", flush=True)
                 repo_url = application["spec"]["source"]["repoURL"]
                 repo_remote_url = self.get_code_repo_remote(repo_url)
                 branch_name = re.search(
