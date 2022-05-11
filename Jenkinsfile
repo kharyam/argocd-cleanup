@@ -38,8 +38,8 @@ spec:
         secret:
           secretName: jenkins-pgp-private-key
       - name: ploigos-config
-        secret:
-          secretName: ploigos-platform-config
+        configMap:
+          name: ploigos-platform-config
       - name: ploigos-config-secrets
         secret:
           secretName: ploigos-platform-config-secrets
