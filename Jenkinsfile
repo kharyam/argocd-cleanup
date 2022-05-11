@@ -15,13 +15,13 @@ spec:
       # image: images.paas.redhat.com/rhvcs/vcs-argocd-cleanup
       image: quay.io/kharyam/vcs-argocd-cleanup:latest
       imagePullPolicy: Always
-      resources:
-        limits:
-            cpu: 500m
-            memory: 512Mi
-        requests:
-            cpu: 500m
-            memory: 512Mi
+#      resources:
+#        limits:
+#            cpu: 500m
+#            memory: 512Mi
+#        requests:
+#            cpu: 500m
+#            memory: 512Mi
       tty: true
       volumeMounts:
       - name: pgp-secret
