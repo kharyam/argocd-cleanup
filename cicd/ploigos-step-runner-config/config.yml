@@ -8,7 +8,6 @@ step-runner-config:
 
   generate-metadata:
   - implementer: Jenkins
-  - implementer: Maven
   - implementer: Git
   - implementer: SemanticVersion
 
@@ -17,68 +16,5 @@ step-runner-config:
     config:
       git-username: rhvcs-monorepo-workflow
 
-  unit-test:
-  - implementer: MavenTest
-    config:
-      test-reports-dirs:
-      - service/target/surefire-reports
-      - kjar/target/surefire-reports
-      - model/target/surefire-reports
-
-  package:
-  - implementer: MavenPackage
-    config:
-      artifact-parent-dir: service/target
-      maven-additional-arguments:
-      - "-Dmaven.test.skip=true"
-      - "-Ppostgres"
-
-  push-artifacts:
-  - implementer: MavenDeploy
-    config:
-      maven-additional-arguments: ['-DskipTests']
-      maven-push-artifact-repo-id: rhvcs-nexus
-      maven-push-artifact-repo-url: https://nexus.corp.redhat.com/repository/rhvcs-maven/
-
   create-container-image:
   - implementer: Buildah
-
-  deploy:
-  - implementer: ArgoCD
-    config:
-      deployment-config-repo: https://gitlab.consulting.redhat.com/rhvcs/application/vcs-backend-config.git
-      deployment-config-helm-chart-path: charts/vcs-backend-service-deploy
-      deployment-config-helm-chart-values-file-image-tag-yq-path: 'image.tag'
-      argocd-auto-sync: True
-      argocd-sync-prune: True
-      git-username: vcs-backend-release-engineering-workflow
-      git-email: 'vcs+release-engineering-workflow@redhat.com'
-      argocd-sync-timeout-seconds: 600 # NOTE: Set to a high value to allow HPA to gather metrics
-      argocd-sync-retry-limit: 5
-    environment-config:
-      DEV:
-        kube-api-uri: https://api.mpp-e1-preprod.syvu.p1.openshiftapps.com:6443
-        deployment-namespace: rhvcs--dev
-        deployment-config-helm-chart-environment-values-file: values-DEV.yaml
-        argocd-project: vcs-dev
-      DEVTEST:
-        kube-api-uri: https://api.mpp-e1-preprod.syvu.p1.openshiftapps.com:6443
-        deployment-namespace: rhvcs--devtest
-        deployment-config-helm-chart-environment-values-file: values-DEVTEST.yaml
-        argocd-project: vcs-devtest
-      TEST:
-        kube-api-uri: https://api.mpp-e1-preprod.syvu.p1.openshiftapps.com:6443
-        deployment-namespace: rhvcs--test
-        deployment-config-helm-chart-environment-values-file: values-TEST.yaml
-        argocd-project: vcs-test
-      PROD:
-        kube-api-uri: https://api.mpp-e1-prod.9e4s.p1.openshiftapps.com:6443
-        deployment-namespace: rhvcs--prod
-        deployment-config-helm-chart-environment-values-file: values-PROD.yaml
-        argocd-project: vcs-prod
-
-  uat:
-  - implementer: ploigos_step_runner.step_implementers.shared.MavenGeneric
-    config:
-      maven-phases-and-goals:
-        - validate
