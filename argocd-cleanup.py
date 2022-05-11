@@ -20,7 +20,7 @@ class ArgocdCleanup:
         self.argocd_username = os.environ['ARGOCD_USERNAME']
         self.argocd_password = os.environ['ARGOCD_PASSWORD']
         self.argocd_configfile = os.environ['CONFIG_FILE']
-        print("* Loading configuration...", end="", flush=True)
+        print("* Loading configuration...", flush=True)
         config = self.load_configuration()
         self.config_repo_mapping = config['configuration']['repo_mapping']
         self.main_branch = config['configuration']['main_branch']
@@ -28,7 +28,7 @@ class ArgocdCleanup:
         self.delete_merged_branches = config['configuration']['delete_merged_branches']
         self.branches_to_delete = []
         self.apps_to_delete = []
-        print("Done")
+        print("  Done")
 
     def cleanup_argocd_applications(self):
         """ Logs into ArgoCD and analyzes DEV applications
@@ -37,20 +37,20 @@ class ArgocdCleanup:
             * If the remote branch exists but was merged to main, the application is deleted
               * Optionally the remote branch can be deleted as well
         """
-        print("* Logging in to Argocd...", end="", flush=True)
+        print("* Logging in to Argocd...", flush=True)
         self.argocd_login()
-        print("Done")
+        print("  Done")
 
-        print("* Retrieving Application Information...", end="", flush=True)
+        print("* Retrieving Application Information...", flush=True)
         application_info = self.argocd_get_app_info()
-        print("Done")
+        print("  Done")
 
-        print("* Analyzing DEV applications", end="", flush=True)
+        print("* Analyzing DEV applications", flush=True)
         for application in application_info:
             argocd_app_name = application["metadata"]["name"]
             target_revision = application["spec"]["source"]["targetRevision"]
             if target_revision.endswith("DEV"):
-                print(".", end="", flush=True)
+                print("   .", end="", flush=True)
                 repo_url = application["spec"]["source"]["repoURL"]
                 repo_remote_url = self.get_code_repo_remote(repo_url)
                 branch_name = re.search(
@@ -66,7 +66,7 @@ class ArgocdCleanup:
                     self.delete_merged_branch_and_app(
                         branch_name, argocd_app_name, repo, remote)
 
-        print("Done")
+        print("  Done")
         if (self.log_only):
             print("\n** The following ArgoCD applications would have been deleted")
         else:
