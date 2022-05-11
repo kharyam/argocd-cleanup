@@ -25,13 +25,16 @@ spec:
       tty: true
       volumeMounts:
       - name: pgp-secret
-        mountPath: "/config/pgp-private-keys"
+        mountPath: "/config/jenkins.key"
+        subPath: "jenkins.key"
         readOnly: true
       - name: ploigos-config
-        mountPath: "/config/ploigos-config"
+        mountPath: "/config/ploigos-platform-config.yml"
+        subPath: "ploigos-platform-config.yml"
         readOnly: true
       - name: ploigos-config-secrets
-        mountPath: "/config/ploigos-config-secrets"
+        mountPath: "/config/ploigos-platform-config-secrets.yml"
+        subPath: "ploigos-platform-config-secrets.yml"
         readOnly: true
     volumes:
       - name: pgp-secret
@@ -60,11 +63,11 @@ spec:
                     script {
                         sh '''
                             set -x
-                            gpg --import $CONFIG_DIR/pgp-private-keys/jenkins.key
+                            gpg --import $CONFIG_DIR/jenkins.key
                             export CONFIG_FILE=$CONFIG_DIR/config.yaml
-                            export ARGOCD_USERNAME=$(cat $CONFIG_DIR/ploigos-config/ploigos-platform-config.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-username')
-                            export ARGOCD_SERVER=$(cat $CONFIG_DIR/ploigos-config/ploigos-platform-config.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-api')
-                            export ARGOCD_PASSWORD=$(sops -d $CONFIG_DIR/ploigos-config-secrets/ploigos-platform-config-secrets.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-password')
+                            export ARGOCD_USERNAME=$(cat $CONFIG_DIR/ploigos-platform-config.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-username')
+                            export ARGOCD_SERVER=$(cat $CONFIG_DIR/ploigos-platform-config.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-api')
+                            export ARGOCD_PASSWORD=$(sops -d $CONFIG_DIR/ploigos-platform-config-secrets.yml  | yq r - 'step-runner-config.deploy.*.config.argocd-password')
                             /app/argocd-cleanup.py                            
                         '''
                     }
