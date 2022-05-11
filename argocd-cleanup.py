@@ -66,7 +66,16 @@ class ArgocdCleanup:
                     self.delete_merged_branch_and_app(
                         branch_name, argocd_app_name, repo, remote)
 
-        print("  Done")
+        print("  Done\n")
+
+        print(
+        '''
+        ****************************
+        *        Results           *
+        ****************************
+        '''
+            )
+
         if (self.log_only):
             print("\n** The following ArgoCD applications would have been deleted")
         else:
