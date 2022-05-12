@@ -22,3 +22,6 @@ step-runner-config:
 
   create-container-image:
   - implementer: Buildah
+    environment-config:
+      PROD:
+        container-image-push-tag: latest
