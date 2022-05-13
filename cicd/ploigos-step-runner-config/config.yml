@@ -22,6 +22,9 @@ step-runner-config:
 
   create-container-image:
   - implementer: Buildah
+
+  push-container-image:
+  - implementer: SKopeo
     environment-config:
       INFRA:
         container-image-push-tag: latest
