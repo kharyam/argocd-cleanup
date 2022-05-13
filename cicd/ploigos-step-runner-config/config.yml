@@ -24,7 +24,7 @@ step-runner-config:
   - implementer: Buildah
 
   push-container-image:
-  - implementer: SKopeo
+  - implementer: Skopeo
     config: {}
     environment-config:
       INFRA:
