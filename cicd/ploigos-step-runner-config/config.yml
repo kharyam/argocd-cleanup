@@ -25,6 +25,7 @@ step-runner-config:
 
   push-container-image:
   - implementer: SKopeo
+    config: {}
     environment-config:
       INFRA:
         container-image-push-tag: latest
