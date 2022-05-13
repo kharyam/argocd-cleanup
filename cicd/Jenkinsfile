@@ -8,5 +8,6 @@ retriever: modernSCM([
 
 // run the pipeline
 containerBuildPipeline(
-    stepRunnerConfigDir: 'cicd/ploigos-step-runner-config/'
+    stepRunnerConfigDir: 'cicd/ploigos-step-runner-config/',
+    envNameProd: 'INFRA'
 )
